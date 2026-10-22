@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -11,4 +12,8 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Items and customers routes are added in Phase 3.
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('items', ItemController::class);
+
+    // Customers routes are added in step 3b.
+});
