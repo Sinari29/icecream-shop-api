@@ -10,8 +10,8 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Demo-only password. Override with SEED_USER_PASSWORD in .env.
-        $password = env('SEED_USER_PASSWORD', 'Password123!');
+        // Demo-only password for local development and testing.
+        $password = 'Password123!';
 
         $users = [
             ['name' => 'Shop Owner', 'email' => 'owner@example.com', 'role' => Role::Owner],
