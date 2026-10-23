@@ -56,6 +56,14 @@ class AuthTest extends TestCase
         $this->getJson('/api/customers')->assertUnauthorized();
     }
 
+    public function test_unauthenticated_request_without_accept_header_returns_json_401(): void
+    {
+        // Plain get() does not send "Accept: application/json".
+        $this->get('/api/items')
+            ->assertUnauthorized()
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
+
     public function test_logout_revokes_the_token(): void
     {
         User::factory()->create(['email' => 'user@test.com']);
