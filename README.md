@@ -113,9 +113,9 @@ The assessment states that Cashiers can "add, view, and edit customer records" a
 - **Price** is stored as `DECIMAL(8,2)` and returned as a JSON number.
 - **Roles** are stored as a string column cast to a PHP enum (`owner`, `manager`, `cashier`).
 
-## Database
+## ER diagram
 
-See [docs/er-diagram.md](docs/er-diagram.md) (also exported as `docs/er-diagram.png`). Schema is created by Laravel migrations in `database/migrations`.
+See [docs/ER-diagram.md](docs/ER-diagram.md) (also exported as `docs/ER-diagram.png`). 
 
 ## Testing
 
