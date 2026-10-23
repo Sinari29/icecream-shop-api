@@ -1,0 +1,160 @@
+{
+  "info": {
+    "name": "Ice Cream Shop API",
+    "description": "Run a Login request first. It stores the token in a collection variable used by the other requests. Demo password: Password123!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": ["pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login - Owner",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const j = pm.response.json();", "if (j.token) { pm.collectionVariables.set('token', j.token); }"] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"owner@example.com\",\n  \"password\": \"Password123!\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Manager",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const j = pm.response.json();", "if (j.token) { pm.collectionVariables.set('token', j.token); }"] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"manager@example.com\",\n  \"password\": \"Password123!\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Cashier",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const j = pm.response.json();", "if (j.token) { pm.collectionVariables.set('token', j.token); }"] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"cashier@example.com\",\n  \"password\": \"Password123!\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Wrong password (expect 401)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"owner@example.com\",\n  \"password\": \"wrong\"\n}" },
+            "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "item": [
+        {
+          "name": "List items",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/items", "host": ["{{base_url}}"], "path": ["api", "items"] } }
+        },
+        {
+          "name": "Search items by name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/items?search=choc", "host": ["{{base_url}}"], "path": ["api", "items"], "query": [{ "key": "search", "value": "choc" }] }
+          }
+        },
+        {
+          "name": "Get item",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/items/1", "host": ["{{base_url}}"], "path": ["api", "items", "1"] } }
+        },
+        {
+          "name": "Create item (Owner/Manager; Cashier gets 403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": 1,\n  \"name\": \"Mint Chip Scoop\",\n  \"description\": \"Mint ice cream with chocolate chips\",\n  \"price\": 2.75,\n  \"quantity\": 20\n}" },
+            "url": { "raw": "{{base_url}}/api/items", "host": ["{{base_url}}"], "path": ["api", "items"] }
+          }
+        },
+        {
+          "name": "Update item (all roles)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 45\n}" },
+            "url": { "raw": "{{base_url}}/api/items/1", "host": ["{{base_url}}"], "path": ["api", "items", "1"] }
+          }
+        },
+        {
+          "name": "Delete item (Owner only)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/api/items/7", "host": ["{{base_url}}"], "path": ["api", "items", "7"] } }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List customers",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/customers", "host": ["{{base_url}}"], "path": ["api", "customers"] } }
+        },
+        {
+          "name": "Get customer",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/api/customers/1", "host": ["{{base_url}}"], "path": ["api", "customers", "1"] } }
+        },
+        {
+          "name": "Create customer (all roles)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Amal Jayasinghe\",\n  \"email\": \"amal@example.com\",\n  \"phone\": \"0770000000\",\n  \"address\": \"3 Park Lane, Colombo\"\n}" },
+            "url": { "raw": "{{base_url}}/api/customers", "host": ["{{base_url}}"], "path": ["api", "customers"] }
+          }
+        },
+        {
+          "name": "Update customer (all roles)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"0700000000\"\n}" },
+            "url": { "raw": "{{base_url}}/api/customers/1", "host": ["{{base_url}}"], "path": ["api", "customers", "1"] }
+          }
+        },
+        {
+          "name": "Delete customer (Owner only)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/api/customers/4", "host": ["{{base_url}}"], "path": ["api", "customers", "4"] } }
+        }
+      ]
+    }
+  ]
+}
