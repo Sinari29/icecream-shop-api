@@ -150,5 +150,5 @@ Enforced server-side in `app/Policies/ItemPolicy.php` and `app/Policies/Customer
 
 ## Documentation
 
-- **ER diagram:** `docs/ER-diagram.md` (renders on GitHub), also available as `docs/ER-diagram.png` and the editable draw.io source.
-- **Postman collection:** `docs/postman/IceCreamShop.postman_collection.json`. Import it, run one of the Login requests (the token is saved to a collection variable), then run the rest. Change the `base_url` variable if the server is not running on `http://127.0.0.1:8000`. The delete requests use IDs 7 (item) and 4 (customer), the first records created after seeding.
+- **ER diagram:** [docs/ER-diagram.md](docs/ER-diagram.md) (renders on GitHub), also available as [docs/ER-diagram.png](docs/ER-diagram.png) and the editable draw.io source.
+- **Postman collection:** [IceCreamShop.postman_collection.json](docs/postman/IceCreamShop.postman_collection.json). Import it, run one of the Login requests (the token is saved to a collection variable), then run the rest. Change the `base_url` variable if the server is not running on `http://127.0.0.1:8000`. The delete requests use IDs 7 (item) and 4 (customer), the first records created after seeding.
