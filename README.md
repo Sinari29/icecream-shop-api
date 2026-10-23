@@ -1,59 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ice Cream Shop API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful backend for an ice cream shop that manages **inventory items** and **customer records** with token authentication and role-based access control (Owner, Manager, Cashier).
 
-## About Laravel
+## Tech stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel 12 (PHP 8.2+)
+- MySQL 8
+- Laravel Sanctum (API token authentication)
+- Laravel Policies (role-based authorization)
+- PHPUnit (feature and unit tests)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Requirements: PHP 8.2+, Composer, MySQL, Git.
 
-## Learning Laravel
+```bash
+git clone https://github.com/Sinari29/icecream-shop-api.git
+cd icecream-shop-api
+composer install
+cp .env.example .env        
+php artisan key:generate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Create two empty databases (one for the app, one for tests):
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```sql
+CREATE DATABASE icecream_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE icecream_shop_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-## Laravel Sponsors
+Check the `DB_*` values in `.env`. 
+Defaults: 
+    host `127.0.0.1` 
+    port `3306` 
+    user `root` 
+    empty password
+    
+Then:
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+The API is now available at `http://127.0.0.1:8000/api`.
 
-### Premium Partners
+## Seeded demo accounts
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+These are **demo-only** credentials created by the seeder. 
 
-## Contributing
+|  Role   |       Email         |   Password   |
+|---------|---------------------|--------------|
+| Owner   | owner@example.com   | Password123! |
+| Manager | manager@example.com | Password123! |
+| Cashier | cashier@example.com | Password123! |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The seeder also creates three categories (Chocolate, Vanilla, Strawberry), six items, and three customers.
 
-## Code of Conduct
+## Authentication
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. `POST /api/auth/login` with `email` and `password` returns a Bearer token.
+2. Send it on later requests: `Authorization: Bearer <token>` and `Accept: application/json`.
+3. `POST /api/auth/logout` deletes the token used for the request, so it can no longer be used. Other tokens for the same user are unaffected.
 
-## Security Vulnerabilities
+Login is rate limited to 5 attempts per minute.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Endpoints
 
-## License
+|   Method  |          Path         |                     Purpose                     |
+|-----------|-----------------------|-------------------------------------------------|
+| POST      | `/api/auth/login`     | Authenticate and receive a token                |
+| POST      | `/api/auth/logout`    | Revoke the current token                        |
+| GET       | `/api/items`          | List items (supports `?search=` and pagination) |
+| GET       | `/api/items/{id}`     | Retrieve an item                                |
+| POST      | `/api/items`          | Create an item                                  |
+| PUT/PATCH | `/api/items/{id}`     | Update an item                                  |
+| DELETE    | `/api/items/{id}`     | Delete an item                                  |
+| GET       | `/api/customers`      | List customers (paginated)                      |
+| GET       | `/api/customers/{id}` | Retrieve a customer                             |
+| POST      | `/api/customers`      | Create a customer                               |
+| PUT/PATCH | `/api/customers/{id}` | Update a customer                               |
+| DELETE    | `/api/customers/{id}` | Delete a customer                               |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Item search:** `GET /api/items?search=choc` returns items whose name contains the text (case-insensitive).
+
+**Pagination:** list endpoints return 15 results per page. Use `?page=2` for further pages.
+
+**Status codes:** 200 OK, 201 Created, 204 No Content (delete), 401 unauthenticated or bad credentials, 403 forbidden for your role, 404 not found, 422 validation error. All `/api/*` errors are JSON.
+
+## Role permissions
+
+|     Operation    | Owner | Manager | Cashier |
+|------------------|-------|---------|---------|
+| View items       | Yes   | Yes     | Yes     |
+| Create items     | Yes   | Yes     | No      |
+| Update items     | Yes   | Yes     | Yes     |
+| Delete items     | Yes   | No      | No      |
+| View customers   | Yes   | Yes     | Yes     |
+| Create customers | Yes   | Yes     | Yes     |
+| Update customers | Yes   | Yes     | Yes     |
+| Delete customers | Yes   | No      | No      |
+
+Permissions are enforced on the server in `app/Policies/ItemPolicy.php` and `app/Policies/CustomerPolicy.php`.
+
+### Assumption: Cashiers cannot delete customers
+
+The assessment states that Cashiers can "add, view, and edit customer records" and that Managers cannot delete customers. It does **not** explicitly say whether Cashiers may delete customers. This project assumes they **cannot**, because delete is not among the operations listed for the role. 
+
+## Design decisions
+
+- **Categories are a separate table.** Each item belongs to one category (one-to-many). Deleting a category that still has items is blocked (restrict).
+- **Hard deletes.** 
+- **Price** is stored as `DECIMAL(8,2)` and returned as a JSON number.
+- **Roles** are stored as a string column cast to a PHP enum (`owner`, `manager`, `cashier`).
+
+## Database
+
+See [docs/er-diagram.md](docs/er-diagram.md) (also exported as `docs/er-diagram.png`). Schema is created by Laravel migrations in `database/migrations`.
+
+## Testing
+
+Tests use the separate `icecream_shop_test` MySQL database, so demo data is never touched.
+
+```bash
+php artisan test
+```
+
+The suite covers login and logout (including token revocation), unauthenticated access, validation, 404 handling, item search, full CRUD for both resources, and a 24-case role permission matrix (`tests/Feature/RolePermissionTest.php`), plus policy unit tests.
+
+## Postman
+
+Import `docs/postman/IceCreamShop.postman_collection.json`. Run a login request first; the token is stored automatically and used by the other requests. Set the `base_url` collection variable if your server is not on `http://127.0.0.1:8000`.
